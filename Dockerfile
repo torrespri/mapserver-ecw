@@ -29,6 +29,7 @@ RUN apt-get install -y \
     libexempi-dev \
     libgdal-dev \
     libgeos-dev \
+    build-essential \	
     gdal-bin
 
 ADD resources /tmp/resources
@@ -60,6 +61,14 @@ RUN cp /tmp/resources/php5-fpm.conf /etc/apache2/conf-available/
 RUN chmod o+x /usr/local/bin/mapserv
 RUN ln -s /usr/local/bin/mapserv /usr/lib/cgi-bin/mapserv
 RUN chmod 755 /usr/lib/cgi-bin
+
+COPY libs/erdas /usr/local/erdas
+RUN ln -s "/usr/local/erdas/lib/x64/release/libNCSEcw.so" "/usr/local/lib/libNCSEcw.so" \
+    && ldconfig
+
+COPY libs/gdal-ecw/libgdal-ecw-1.10.0.tar.gz /usr/src/
+COPY libs/gdal-ecw/gdal-ecw-build /usr/bin/
+RUN gdal-ecw-build "/usr/local/erdas"
 
 EXPOSE  80
 
